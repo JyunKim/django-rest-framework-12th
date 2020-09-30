@@ -71,13 +71,13 @@ class Profile(models.Model):
 >>> q.save()
 >>> w = Professor(name="안형찬", department="공과대학 컴퓨터과학과")
 >>> w.save()
->>> a = Lecture(lecture_id="CSI2102-02", faculty="공과대학", department="컴퓨터과학전공", semester="2020-2", grade="1", name="객체지향프로그래밍", credit="3", classroom="동영상컨텐츠/실시간온라인", time="화8,9/목9")
+>>> a = Lecture(code="CSI2102-02", faculty="공과대학", department="컴퓨터과학전공", semester="2020-2", grade=1, name="객체지향프로그래밍", credit=3, classroom="동영상컨텐츠/실시간온라인", time="화8,9/목9")
 >>> a.professor = q
 >>> a.save()
->>> b = Lecture(lecture_id="CSI3108-01", faculty="공과대학", department="컴퓨터과학전공", semester="2020-2", grade="3", name="알고리즘분석", credit="3", classroom="공D504", time="수2/금5,6")
+>>> b = Lecture(code="CSI3108-01", faculty="공과대학", department="컴퓨터과학전공", semester="2020-2", grade=3, name="알고리즘분석", credit=3, classroom="공D504", time="수2/금5,6")
 >>> b.professor = w
 >>> b.save()
->>> w.lectures.create(lecture_id="CSI2103-02", faculty="공과대학", department="컴퓨터과학전공", semester="2020-1", grade="3", name="자료구조", credit="3", classroom="공D504", time="화4/목6,7")
+>>> w.lectures.create(code="CSI2103-02", faculty="공과대학", department="컴퓨터과학전공", semester="2020-1", grade=3, name="자료구조", credit=3, classroom="공D504", time="화4/목6,7")
 # Lecture.objects.create(professor=w, ~)도 같은거
 ```
 2. 삽입한 객체들을 쿼리셋으로 조회해보기
@@ -99,4 +99,57 @@ class Profile(models.Model):
 ### 간단한 회고 
 실제로 내가 필요로 하는 서비스를 만드는 것이라 흥미롭게 진행할 수 있었다.   
 실제 데이터를 삽입하면서 내가 설정한 조건에 맞지 않는 데이터가 존재하여 모델을 수정하고 migration을 계속 추가하여 초기 설계를 신경써서 해야겠다는 생각을 했다.   
-중간중간 커밋하자.. 
+중간중간 커밋하자..
+
+
+## 3주차 과제
+
+### 모델 선택 및 데이터 삽입
+```python
+class Lecture(models.Model):
+    professor = models.ForeignKey('Professor', on_delete=models.CASCADE, related_name='lectures', verbose_name='담당교수')
+    code = models.CharField('학정번호', max_length=30)
+    faculty = models.CharField('학부대학', max_length=30)
+    department = models.CharField('전공', max_length=30)
+    semester = models.CharField('학기', max_length=30)
+    grade = models.IntegerField('학년')
+    name = models.CharField('교과목명', max_length=30)
+    credit = models.IntegerField('학점')
+    classroom = models.CharField('강의실', max_length=50)
+    time = models.CharField('강의시간', max_length=50)
+
+    def __str__(self):
+        return "{}, {}".format(self.name, self.professor.name)
+
+
+class Professor(models.Model):
+    name = models.CharField('이름', max_length=30)
+    department = models.CharField('소속', max_length=30, null=True, blank=True)
+    office = models.CharField('연구실', max_length=30, null=True, blank=True)
+    phone = models.CharField('연락처', max_length=30, null=True, blank=True)
+    email = models.EmailField('이메일', null=True, blank=True)
+
+    def __str__(self):
+        return "{}, {}".format(self.name, self.department)
+```
+![lecture](api/img/lecture.PNG)
+![lecture](api/img/lecture2.PNG)
+
+### 모든 list를 가져오는 API
+API 요청한 URL과 결과 데이터를 코드로 보여주세요!
+
+### 특정한 데이터를 가져오는 API
+API 요청한 URL과 결과 데이터를 코드로 보여주세요!
+
+### 새로운 데이터를 create하도록 요청하는 API
+요청한 URL 및 Body 데이터의 내용과 create된 결과를 보여주세요!
+
+### (선택) 특정 데이터를 삭제 또는 업데이트하는 API
+위의 필수 과제와 마찬가지로 요청 URL 및 결과 데이터를 보여주세요!
+
+### 공부한 내용 정리
+새로 알게된 점, 정리 하고 싶은 개념, 궁금한점 등을 정리해 주세요
+
+### 간단한 회고 
+파일 실행 에러   
+django.core.exceptions.ImproperlyConfigured: Requested setting INSTALLED_APPS, but settings are not configured.

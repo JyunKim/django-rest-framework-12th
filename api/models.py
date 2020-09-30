@@ -52,34 +52,23 @@ class Result(models.Model):
     max_mileage = models.IntegerField('최대 마일리지')
 
 
+class Major(models.Model):
+    name = models.CharField('학과명', max_length=30)
+
+    def __str__(self):
+        return self.name
+
+
 class Profile(models.Model):
-    MAJOR_CHOICES = [
-        ('국어국문학과', '국어국문학과'), ('중어중문학과', '중어중문학과'), ('영어영문학과', '영어영문학과'),
-        ('독어독문학과', '독어독문학과'), ('불어불문학과', '불어불문학과'), ('노어노문학과', '노어노문학과'), ('사학과', '사학과'),
-        ('철학과', '철학과'), ('문헌정보학과', '문헌정보학과'), ('심리학과', '심리학과'), ('경제학과', '경제학과'),
-        ('응용통계학과', '응용통계학과'), ('경영학과', '경영학과'), ('수학과', '수학과'), ('물리학과', '물리학과'),
-        ('화학과', '화학과'), ('지구시스템학과', '지구시스템학과'), ('천문우주학과', '천문우주학과'), ('대기과학과', '대기과학과'),
-        ('화공생명공학과', '화공생명공학과'), ('전기전자공학과', '전기전자공학과'), ('건축공학과', '건축공학과'),
-        ('도시공학과', '도시공학과'), ('사회환경시스템공학과', '사회환경시스템공학과'), ('기계공학과', '기계공학과'),
-        ('신소재공학과', '신소재공학과'), ('산업공학과', '산업공학과'), ('컴퓨터과학과', '컴퓨터과학과'),
-        ('글로벌융합공학과', '글로벌융합공학과'), ('시스템생물학과', '시스템생물학과'), ('생화학과', '생화학과'),
-        ('생명공학과', '생명공학과'), ('신학과', '신학과'), ('정치외교학과', '정치외교학과'), ('행정학과', '행정학과'),
-        ('사회복지학과', '사회복지학과'), ('사회학과', '사회학과'), ('문화인류학과', '문화인류학과'),
-        ('언론홍보영상학과', '언론홍보영상학과'), ('교회음악과', '교회음악과'), ('성악과', '성악과'), ('피아노과', '피아노과'),
-        ('관현악과', '관현악과'), ('작곡과', '작곡과'), ('의류환경학과', '의류환경학과'), ('식품영양학과', '식품영양학과'),
-        ('실내건축학과', '실내건축학과'), ('아동가족학과', '아동가족학과'), ('생활디자인학과', '생활디자인학과'),
-        ('교육학과', '교육학과'), ('체육교육학과', '체육교육학과'), ('스포츠응용산업학과', '스포츠응용산업학과'),
-        ('간호학과', '간호학과'), ('의예과', '의예과'), ('치의예과', '치의예과'), ('약학과', '약학과'), ('국제학과', '국제학과'),
-        ('글로벌인재학과', '글로벌인재학과')
-    ]
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     lectures = models.ManyToManyField(Lecture, related_name='users')
     student_id = models.IntegerField('학번', unique=True)
-    major = models.CharField('전공', max_length=30, choices=MAJOR_CHOICES)
-    second_major = models.CharField('복수전공', max_length=30, null=True, blank=True, choices=MAJOR_CHOICES)
+    major = models.ForeignKey(Major, on_delete=models.CASCADE, related_name='users', verbose_name='전공')
+    second_major = models.ForeignKey(Major, on_delete=models.SET_NULL, related_name='second_users',
+                                     verbose_name='복수전공', null=True, blank=True)
     grade = models.IntegerField('학년')
     created_at = models.DateTimeField('가입일시', auto_now_add=True)
     updated_at = models.DateTimeField('변경일시', auto_now=True)
 
-# created_at = DateTimeField('생성일시', auto_now_add=True) -> default=timezone.now랑 같음
-# updated_at = DateTimeField('변경일시', auto_now=True)
+    def __str__(self):
+        return self.user.username
