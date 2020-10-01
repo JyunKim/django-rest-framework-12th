@@ -148,7 +148,27 @@ API 요청한 URL과 결과 데이터를 코드로 보여주세요!
 위의 필수 과제와 마찬가지로 요청 URL 및 결과 데이터를 보여주세요!
 
 ### 공부한 내용 정리
-새로 알게된 점, 정리 하고 싶은 개념, 궁금한점 등을 정리해 주세요
+Views   
+- FBV(Function Based Views)
+- CBV(Class Based Views)   
+HTTP 메소드를 if가 아닌 함수명으로 처리
+
+REST(Representational State Transfer)
+- uri을 통해 정보의 자원 표현 -> 고유한 주소로 식별
+- 자원에 대한 행위(CRUD)는 HTTP 메소드를 통해 표현(header)
+- 클라이언트가 자원의 상태를 조작하기 위해 uri와 method를 포함한 요청을 보내면, 
+서버는 응답으로 자원을 JSON, XML과 같은 형태(Representation)로 전송(body)
+
+REST API 규칙 -> RESTful
+- uri에는 명사, 소문자 사용 -> HTTP 메소드와 분리
+- /로 계층 관계 표현, 마지막에 포함 x
+- _대신 - 사용
+- Collection은 복수, Document는 단수로 사용
+
+Serializer
+- 복잡한 데이터를 native python 자료형으로 변환해줌
+- 클라이언트 요청 -> queryset, 모델 인스턴스 -> native python 자료형 -> json, xml 반환 
+
 
 ### 간단한 회고 
 파일 실행 에러   
