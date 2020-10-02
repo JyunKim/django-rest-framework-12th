@@ -7,6 +7,7 @@ from .serializers import LectureSerializer
 
 
 class LectureList(APIView):
+    # format=None - 응답의 포맷을 query parameter가 아닌 format suffix로 전송
     def get(self, request, format=None):
         lectures = Lecture.objects.all()
         serializer = LectureSerializer(lectures, many=True)

@@ -136,16 +136,135 @@ class Professor(models.Model):
 ![lecture](api/img/lecture2.PNG)
 
 ### 모든 list를 가져오는 API
-API 요청한 URL과 결과 데이터를 코드로 보여주세요!
+- URL: api/lectures/
+- Method: GET
+```python
+[
+    {
+        "id": 1,
+        "code": "CSI2102-02",
+        "faculty": "공과대학",
+        "department": "컴퓨터과학전공",
+        "semester": "2020-2",
+        "grade": 1,
+        "name": "객체지향프로그래밍",
+        "credit": 3,
+        "classroom": "동영상컨텐츠/실시간온라인",
+        "time": "화8,9/목9",
+        "professor": 1
+    },
+    {
+        "id": 2,
+        "code": "CSI3108-01",
+        "faculty": "공과대학",
+        "department": "컴퓨터과학전공",
+        "semester": "2020-2",
+        "grade": 3,
+        "name": "알고리즘분석",
+        "credit": 3,
+        "classroom": "공D504",
+        "time": "수2/금5,6",
+        "professor": 2
+    },
+    {
+        "id": 3,
+        "code": "CSI2103-02",
+        "faculty": "공과대학",
+        "department": "컴퓨터과학전공",
+        "semester": "2020-1",
+        "grade": 3,
+        "name": "자료구조",
+        "credit": 3,
+        "classroom": "공D504",
+        "time": "화4/목6,7",
+        "professor": 2
+    }
+]
+```
 
 ### 특정한 데이터를 가져오는 API
-API 요청한 URL과 결과 데이터를 코드로 보여주세요!
+- URL: api/lectures/1/
+- Method: GET
+```python
+{
+    "id": 1,
+    "code": "CSI2102-02",
+    "faculty": "공과대학",
+    "department": "컴퓨터과학전공",
+    "semester": "2020-2",
+    "grade": 1,
+    "name": "객체지향프로그래밍",
+    "credit": 3,
+    "classroom": "동영상컨텐츠/실시간온라인",
+    "time": "화8,9/목9",
+    "professor": 1
+}
+```
 
 ### 새로운 데이터를 create하도록 요청하는 API
-요청한 URL 및 Body 데이터의 내용과 create된 결과를 보여주세요!
+- URL: api/lectures/
+- Method: POST
+- Body: {
+        "code": "CSI2102-01",
+        "faculty": "공과대학",
+        "department": "컴퓨터과학전공",
+        "semester": "2019-2",
+        "grade": 1,
+        "name": "객체지향프로그래밍",
+        "credit": 3,
+        "classroom": "I진D114",
+        "time": "화7,8,9",
+        "professor": 1
+    }
+```python
+{
+    "id": 4,
+    "code": "CSI2102-01",
+    "faculty": "공과대학",
+    "department": "컴퓨터과학전공",
+    "semester": "2019-2",
+    "grade": 1,
+    "name": "객체지향프로그래밍",
+    "credit": 3,
+    "classroom": "I진D114",
+    "time": "화7,8,9",
+    "professor": 1
+}
+```
 
-### (선택) 특정 데이터를 삭제 또는 업데이트하는 API
-위의 필수 과제와 마찬가지로 요청 URL 및 결과 데이터를 보여주세요!
+### 특정 데이터를 삭제 또는 업데이트하는 API
+- URL: api/lectures/4/
+- Method: PUT
+- Body: {
+        "code": "CSI2102-02",
+        "faculty": "공과대학",
+        "department": "컴퓨터과학전공",
+        "semester": "2019-2",
+        "grade": 1,
+        "name": "객체지향프로그래밍",
+        "credit": 3,
+        "classroom": "I진D114",
+        "time": "화7,8,9",
+        "professor": 1
+    }
+```python
+{
+    "id": 4,
+    "code": "CSI2102-02",
+    "faculty": "공과대학",
+    "department": "컴퓨터과학전공",
+    "semester": "2019-2",
+    "grade": 1,
+    "name": "객체지향프로그래밍",
+    "credit": 3,
+    "classroom": "I진D114",
+    "time": "화7,8,9",
+    "professor": 1
+}
+```
+- URL: api/lectures/4/
+- Method: DELETE
+![lecture](api/img/delete_lecture.PNG)
 
 ### 공부한 내용 정리
 Views   
@@ -154,15 +273,16 @@ Views
 HTTP 메소드를 if가 아닌 함수명으로 처리
 
 REST(Representational State Transfer)
-- uri을 통해 정보의 자원 표현 -> 고유한 주소로 식별
+- uri을 통해 정보의 자원 표현 -> 고유한 주소로 식별(identifier)
 - 자원에 대한 행위(CRUD)는 HTTP 메소드를 통해 표현(header)
 - 클라이언트가 자원의 상태를 조작하기 위해 uri와 method를 포함한 요청을 보내면, 
-서버는 응답으로 자원을 JSON, XML과 같은 형태(Representation)로 전송(body)
+서버는 응답으로 자원을 JSON, XML과 같은 형태로 표현(Representation)하여 전송(body)
 
 REST API 규칙 -> RESTful
 - uri에는 명사, 소문자 사용 -> HTTP 메소드와 분리
 - /로 계층 관계 표현, 마지막에 포함 x
 - _대신 - 사용
+- 파일 확장자는 uri에 포함 x -> Accept Header 이용
 - Collection은 복수, Document는 단수로 사용
 
 Serializer
@@ -171,5 +291,4 @@ Serializer
 
 
 ### 간단한 회고 
-파일 실행 에러   
-django.core.exceptions.ImproperlyConfigured: Requested setting INSTALLED_APPS, but settings are not configured.
+자체 템플릿 ㄷㄷ

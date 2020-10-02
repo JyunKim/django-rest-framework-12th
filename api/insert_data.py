@@ -22,6 +22,6 @@ MAJOR_CHOICES = [
 ]
 
 
-def insert():
+def insert_major():
     for majors in MAJOR_CHOICES:
         Major.objects.create(name=majors[0])
