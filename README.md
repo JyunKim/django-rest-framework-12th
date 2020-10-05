@@ -133,6 +133,7 @@ class Professor(models.Model):
         return "{}, {}".format(self.name, self.department)
 ```
 ![lecture](api/img/lecture.PNG)
+
 ![lecture](api/img/lecture2.PNG)
 
 ### 모든 list를 가져오는 API
@@ -289,6 +290,20 @@ Serializer
 - 복잡한 데이터를 native python 자료형으로 변환해줌
 - 클라이언트 요청 -> queryset, 모델 인스턴스 -> native python 자료형 -> json, xml 반환 
 
+Content Type
+- 요청, 응답 헤더에 포함
+- 컨텐츠 타입(MIME)와 문자열 인코딩 명시
+
+Accept Header
+- 요청 헤더에 포함
+- 클라이언트가 허용할 수 있는 파일 형식(MIME) 명시 -> 처리할 응답 형식 선언
+
+Format suffix
+- 처리할 응답 파일 형식을 url에 추가
+
+Query parameter format
+- 파일 형식을 query string으로 전송
 
 ### 간단한 회고 
 자체 템플릿 ㄷㄷ
+dumpdata, loaddata

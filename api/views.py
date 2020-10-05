@@ -1,4 +1,4 @@
-from django.http import Http404
+from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -6,27 +6,27 @@ from .models import Lecture
 from .serializers import LectureSerializer
 
 
+# APIView를 사용하여 프론트와 소통
 class LectureList(APIView):
-    # format=None - 응답의 포맷을 query parameter가 아닌 format suffix로 전송
+    # format=None - 포맷을 query parameter가 아닌 format suffix로 전달
     def get(self, request, format=None):
         lectures = Lecture.objects.all()
+        # 모델 인스턴스를 파이썬 내부 자료형으로 변환
+        # 쿼리셋을 직렬화할 때는 many=True
         serializer = LectureSerializer(lectures, many=True)
         return Response(serializer.data)
 
     def post(self, request, format=None):
         serializer = LectureSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # valid 하지 않으면 status code 400 raise
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class LectureDetail(APIView):
     def get_object(self, pk):
-        try:
-            return Lecture.objects.get(pk=pk)
-        except Lecture.DoesNotExist:
-            raise Http404
+        return get_object_or_404(Lecture, pk=pk)
 
     def get(self, request, pk, format=None):
         lecture = self.get_object(pk)
@@ -36,13 +36,11 @@ class LectureDetail(APIView):
     def put(self, request, pk, format=None):
         lecture = self.get_object(pk)
         serializer = LectureSerializer(lecture, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
     def delete(self, request, pk, format=None):
         lecture = self.get_object(pk)
         lecture.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
