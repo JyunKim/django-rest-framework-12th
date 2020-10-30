@@ -320,6 +320,27 @@ router.register(r'lectures', LectureViewSet)  # r: raw string(\도 그대로 출
 urlpatterns = router.urls
 ```
 자동으로 2개의 url 생성
-- List - List, Create -> lectures/
-- Detail - Retrieve, Update, Destroy -> lectures/\<int:pk>/
+- List - list, create -> lectures/
+- Detail - retrieve, update, destroy -> lectures/\<int:pk>/
 
+```python
+@action(methods=['post'], detail=False, url_path='method', url_name='method')
+```
+- methods: http method(default는 get)
+- detail: list인지 detail인지
+- url_path: ~/method
+- url_name: 'api:method'
+
+```python
+views.py
+
+from django.db.models import Q
+
+@action(methods=['post'], detail=False)
+def filter(self, request):
+    pf = Professor.objects.get(pk=request.POST['professor'])
+    lectures = Lecture.objects.filter(Q(name=request.POST['name']) | Q(professor=pf)).order_by('grade')
+    serializer = LectureSerializer(lectures, many=True)
+    return Response(serializer.data)
+```
+Q: 조건을 or로 연산시킬 수 있게 해줌

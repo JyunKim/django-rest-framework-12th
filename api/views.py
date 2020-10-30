@@ -2,9 +2,10 @@ from django.shortcuts import get_object_or_404
 from rest_framework import status, viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import Lecture, Professor
+from .models import Lecture, Professor, Rank, Result
 from .serializers import LectureSerializer
 from rest_framework.decorators import action
+from django.db.models import Q
 
 
 '''
@@ -52,3 +53,11 @@ class LectureDetail(APIView):
 class LectureViewSet(viewsets.ModelViewSet):
     serializer_class = LectureSerializer
     queryset = Lecture.objects.all()
+
+    @action(methods=['post'], detail=False)  # detail: list인지 detail인지
+    def filter(self, request):
+        pf = Professor.objects.get(pk=request.POST['professor'])
+        lectures = Lecture.objects.filter(Q(name=request.POST['name']) | Q(professor=pf)).order_by('grade')
+        serializer = LectureSerializer(lectures, many=True)
+        return Response(serializer.data)
+
