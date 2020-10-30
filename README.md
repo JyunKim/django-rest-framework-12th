@@ -307,3 +307,19 @@ Query parameter format
 ### 간단한 회고 
 자체 템플릿 ㄷㄷ
 dumpdata, loaddata
+
+## 4주차 과제
+
+### url 매핑
+```python
+urls.py
+
+router = routers.DefaultRouter()
+router.register(r'lectures', LectureViewSet)  # r: raw string(\도 그대로 출력)
+
+urlpatterns = router.urls
+```
+자동으로 2개의 url 생성
+- List - List, Create -> lectures/
+- Detail - Retrieve, Update, Destroy -> lectures/\<int:pk>/
+

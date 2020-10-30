@@ -1,11 +1,13 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import status
+from rest_framework import status, viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import Lecture
+from .models import Lecture, Professor
 from .serializers import LectureSerializer
+from rest_framework.decorators import action
 
 
+'''
 # APIView를 사용하여 프론트와 소통
 class LectureList(APIView):
     # format=None - 포맷을 query parameter가 아닌 format suffix로 전달
@@ -44,3 +46,9 @@ class LectureDetail(APIView):
         lecture = self.get_object(pk)
         lecture.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+'''
+
+
+class LectureViewSet(viewsets.ModelViewSet):
+    serializer_class = LectureSerializer
+    queryset = Lecture.objects.all()
