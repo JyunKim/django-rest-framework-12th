@@ -40,7 +40,7 @@ class Rank(models.Model):
     is_major = models.BooleanField('전공 여부')
     is_included = models.BooleanField('전공자 정원 포함 여부')
     grade = models.IntegerField('학년')
-    success = models.BooleanField('수강 여부')
+    success = models.BooleanField('신청 성공 여부')
 
 
 class Result(models.Model):

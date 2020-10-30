@@ -1,9 +1,10 @@
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse
 from rest_framework import status, viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import Lecture, Professor, Rank, Result
-from .serializers import LectureSerializer
+from .models import Lecture, Professor
+from .serializers import LectureSerializer, ResultSerializer, RankSerializer
 from rest_framework.decorators import action
 from django.db.models import Q
 
@@ -59,5 +60,19 @@ class LectureViewSet(viewsets.ModelViewSet):
         pf = Professor.objects.get(pk=request.POST['professor'])
         lectures = Lecture.objects.filter(Q(name=request.POST['name']) | Q(professor=pf)).order_by('grade')
         serializer = LectureSerializer(lectures, many=True)
+        return Response(serializer.data)
+
+    @action(detail=True)
+    def result(self, request, pk):
+        lecture = get_object_or_404(Lecture, pk=pk)
+        result = lecture.result
+        serializer = ResultSerializer(result)
+        return Response(serializer.data)
+
+    @action(detail=True)
+    def rank(self, request, pk):
+        lecture = get_object_or_404(Lecture, pk=pk)
+        ranks = lecture.ranks.all().order_by('-mileage', 'grade')
+        serializer = RankSerializer(ranks, many=True)
         return Response(serializer.data)
 

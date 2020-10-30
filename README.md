@@ -320,16 +320,19 @@ router.register(r'lectures', LectureViewSet)  # r: raw string(\도 그대로 출
 urlpatterns = router.urls
 ```
 자동으로 2개의 url 생성
-- List - list, create -> lectures/
-- Detail - retrieve, update, destroy -> lectures/\<int:pk>/
+- List - list, create -> url: lectures/ name: 'lecture-list'
+- Detail - retrieve, update, destroy -> url: lectures/{pk}/ name: 'lecture-detail'
+- prefix = lectures, basename = lecture
 
 ```python
 @action(methods=['post'], detail=False, url_path='method', url_name='method')
 ```
 - methods: http method(default는 get)
 - detail: list인지 detail인지
-- url_path: ~/method
-- url_name: 'api:method'
+- url_path: lectures/method (default는 함수 이름)
+- url_name: 'lecture-method' (default는 함수 이름 _ -> -)
+
+![lecture](api/img/action.PNG)
 
 ```python
 views.py
