@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Lecture, Result, Rank
+from .models import Lecture, Result, Rank, Profile
 
 
 class LectureSerializer(serializers.ModelSerializer):
@@ -17,4 +17,10 @@ class ResultSerializer(serializers.ModelSerializer):
 class RankSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rank
+        fields = '__all__'
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
         fields = '__all__'

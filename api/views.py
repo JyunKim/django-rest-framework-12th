@@ -3,8 +3,8 @@ from django.urls import reverse
 from rest_framework import status, viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import Lecture, Professor
-from .serializers import LectureSerializer, ResultSerializer, RankSerializer
+from .models import Lecture, Professor, Profile
+from .serializers import LectureSerializer, ResultSerializer, RankSerializer, ProfileSerializer
 from rest_framework.decorators import action
 from django.db.models import Q
 
@@ -76,3 +76,28 @@ class LectureViewSet(viewsets.ModelViewSet):
         serializer = RankSerializer(ranks, many=True)
         return Response(serializer.data)
 
+
+class ProfileViewSet(viewsets.ModelViewSet):
+    serializer_class = ProfileSerializer
+    queryset = Profile.objects.all()
+
+    @action(detail=True)
+    def mileage_cut(self, request, pk):
+        mileage_cut = {}
+        user = get_object_or_404(Profile, pk=pk)
+        for lecture in user.lectures.all():
+            if lecture.result.include_second_major:
+                if user.major == lecture.department or user.second_major == lecture.department:
+                    mileage_cut[lecture.name] = lecture.ranks.filter(is_included=True, grade=user.grade, success=True
+                                                                     ).order_by('mileage')[0].mileage
+                else:
+                    mileage_cut[lecture.name] = lecture.ranks.filter(is_included=False, grade=user.grade, success=True
+                                                                     ).order_by('mileage')[0].mileage
+            else:
+                if user.major == lecture.department:
+                    mileage_cut[lecture.name] = lecture.ranks.filter(is_included=True, grade=user.grade, success=True
+                                                                     ).order_by('mileage')[0].mileage
+                else:
+                    mileage_cut[lecture.name] = lecture.ranks.filter(is_included=False, grade=user.grade, success=True
+                                                                     ).order_by('mileage')[0].mileage
+        return Response(mileage_cut)

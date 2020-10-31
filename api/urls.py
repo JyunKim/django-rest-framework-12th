@@ -2,7 +2,7 @@ from django.urls import path
 from rest_framework.urlpatterns import format_suffix_patterns
 # from .views import LectureList, LectureDetail
 from rest_framework import routers
-from .views import LectureViewSet
+from .views import LectureViewSet, ProfileViewSet
 
 
 '''
@@ -21,5 +21,6 @@ urlpatterns = format_suffix_patterns(urlpatterns)
 
 router = routers.DefaultRouter()
 router.register(r'lectures', LectureViewSet)  # r: raw string(\도 그대로 출력)
+router.register(r'profiles', ProfileViewSet)
 
 urlpatterns = router.urls
