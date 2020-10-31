@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from .models import Lecture, Professor, Profile
 from .serializers import LectureSerializer, ResultSerializer, RankSerializer, ProfileSerializer
 from rest_framework.decorators import action
-from django.db.models import Q
+from django.db.models import Q  # filter or 연산 가능
 
 
 '''
@@ -57,8 +57,7 @@ class LectureViewSet(viewsets.ModelViewSet):
 
     @action(methods=['post'], detail=False)  # detail: list인지 detail인지
     def filter(self, request):
-        pf = Professor.objects.get(pk=request.POST['professor'])
-        lectures = Lecture.objects.filter(Q(name=request.POST['name']) | Q(professor=pf)).order_by('grade')
+        lectures = Lecture.objects.filter(name=request.POST.get('name')).order_by('grade')
         serializer = LectureSerializer(lectures, many=True)
         return Response(serializer.data)
 
@@ -81,7 +80,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
     serializer_class = ProfileSerializer
     queryset = Profile.objects.all()
 
-    @action(detail=True)
+    @action(detail=True, url_path='mileage-cut')
     def mileage_cut(self, request, pk):
         mileage_cut = {}
         user = get_object_or_404(Profile, pk=pk)

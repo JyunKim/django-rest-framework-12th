@@ -310,6 +310,8 @@ dumpdata, loaddata
 
 ## 4주차 과제
 
+### Viewset
+
 ### url 매핑
 ```python
 urls.py
@@ -324,6 +326,7 @@ urlpatterns = router.urls
 - Detail - retrieve, update, destroy -> url: lectures/{pk}/ name: 'lecture-detail'
 - prefix = lectures, basename = lecture
 
+### action 추가
 ```python
 @action(methods=['post'], detail=False, url_path='method', url_name='method')
 ```
@@ -337,13 +340,67 @@ urlpatterns = router.urls
 ```python
 views.py
 
-from django.db.models import Q
+class LectureViewSet(viewsets.ModelViewSet):
+    serializer_class = LectureSerializer
+    queryset = Lecture.objects.all()
 
-@action(methods=['post'], detail=False)
-def filter(self, request):
-    pf = Professor.objects.get(pk=request.POST['professor'])
-    lectures = Lecture.objects.filter(Q(name=request.POST['name']) | Q(professor=pf)).order_by('grade')
-    serializer = LectureSerializer(lectures, many=True)
-    return Response(serializer.data)
+    @action(methods=['post'], detail=False)
+    def filter(self, request):
+        lectures = Lecture.objects.filter(name=request.POST.get('name')).order_by('grade')
+        serializer = LectureSerializer(lectures, many=True)
+        return Response(serializer.data)
 ```
-Q: 조건을 or로 연산시킬 수 있게 해줌
+![lecture](api/img/filter1.PNG)
+![lecture](api/img/filter2.PNG)
+
+![lecture](api/img/filter3.PNG)
+
+```python
+    @action(detail=True)
+    def result(self, request, pk):
+        lecture = get_object_or_404(Lecture, pk=pk)
+        result = lecture.result
+        serializer = ResultSerializer(result)
+        return Response(serializer.data)
+```
+![lecture](api/img/result.PNG)
+
+```python
+    @action(detail=True)
+    def rank(self, request, pk):
+        lecture = get_object_or_404(Lecture, pk=pk)
+        ranks = lecture.ranks.all().order_by('-mileage', 'grade')
+        serializer = RankSerializer(ranks, many=True)
+        return Response(serializer.data)
+```
+![lecture](api/img/rank.PNG)
+
+```python
+class ProfileViewSet(viewsets.ModelViewSet):
+    serializer_class = ProfileSerializer
+    queryset = Profile.objects.all()
+
+    @action(detail=True, url_path='mileage-cut')
+    def mileage_cut(self, request, pk):
+        mileage_cut = {}
+        user = get_object_or_404(Profile, pk=pk)
+        for lecture in user.lectures.all():
+            if lecture.result.include_second_major:
+                if user.major == lecture.department or user.second_major == lecture.department:
+                    mileage_cut[lecture.name] = lecture.ranks.filter(is_included=True, grade=user.grade, success=True
+                                                                     ).order_by('mileage')[0].mileage
+                else:
+                    mileage_cut[lecture.name] = lecture.ranks.filter(is_included=False, grade=user.grade, success=True
+                                                                     ).order_by('mileage')[0].mileage
+            else:
+                if user.major == lecture.department:
+                    mileage_cut[lecture.name] = lecture.ranks.filter(is_included=True, grade=user.grade, success=True
+                                                                     ).order_by('mileage')[0].mileage
+                else:
+                    mileage_cut[lecture.name] = lecture.ranks.filter(is_included=False, grade=user.grade, success=True
+                                                                     ).order_by('mileage')[0].mileage
+        return Response(mileage_cut)
+```
+![lecture](api/img/profile-detail.PNG)
+
+![lecture](api/img/mileage_cut.PNG)
