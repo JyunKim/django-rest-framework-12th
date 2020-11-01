@@ -3,7 +3,7 @@ from django.urls import reverse
 from rest_framework import status, viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import Lecture, Professor, Profile
+from .models import Lecture, Professor, Profile, Rank
 from .serializers import LectureSerializer, ResultSerializer, RankSerializer, ProfileSerializer
 from rest_framework.decorators import action
 from django.db.models import Q  # filter or 연산 가능
@@ -55,9 +55,11 @@ class LectureViewSet(viewsets.ModelViewSet):
     serializer_class = LectureSerializer
     queryset = Lecture.objects.all()
 
-    @action(methods=['post'], detail=False)  # detail: list인지 detail인지
-    def filter(self, request):
-        lectures = Lecture.objects.filter(name=request.POST.get('name')).order_by('grade')
+    @action(methods=['get'], detail=False)  # detail: list인지 detail인지
+    def filter(self, request):  # 입력을 query string으로 받음
+        lectures = Lecture.objects.filter(name=request.GET['name']).order_by('grade')
+        # request.data[~]도 가능
+        # filter(~__gt=~): greater than, lt(less than), gte(greater than equal), lte
         serializer = LectureSerializer(lectures, many=True)
         return Response(serializer.data)
 
@@ -100,3 +102,8 @@ class ProfileViewSet(viewsets.ModelViewSet):
                     mileage_cut[lecture.name] = lecture.ranks.filter(is_included=False, grade=user.grade, success=True
                                                                      ).order_by('mileage')[0].mileage
         return Response(mileage_cut)
+
+
+class RankViewSet(viewsets.ModelViewSet):
+    serializer_class = RankSerializer
+    queryset = Rank.objects.all()

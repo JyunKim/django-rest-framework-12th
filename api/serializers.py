@@ -2,12 +2,6 @@ from rest_framework import serializers
 from .models import Lecture, Result, Rank, Profile
 
 
-class LectureSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Lecture
-        fields = '__all__'
-
-
 class ResultSerializer(serializers.ModelSerializer):
     class Meta:
         model = Result
@@ -15,6 +9,11 @@ class ResultSerializer(serializers.ModelSerializer):
 
 
 class RankSerializer(serializers.ModelSerializer):
+    name = serializers.SerializerMethodField()
+
+    def get_name(self, obj):
+        return obj.lecture.name
+
     class Meta:
         model = Rank
         fields = '__all__'
@@ -23,4 +22,12 @@ class RankSerializer(serializers.ModelSerializer):
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
+        fields = '__all__'
+
+
+class LectureSerializer(serializers.ModelSerializer):
+    ranks = RankSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Lecture
         fields = '__all__'
