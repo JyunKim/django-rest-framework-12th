@@ -55,13 +55,17 @@ class LectureViewSet(viewsets.ModelViewSet):
     serializer_class = LectureSerializer
     queryset = Lecture.objects.all()
 
-    @action(methods=['get'], detail=False)  # detail: list인지 detail인지
-    def filter(self, request):  # 입력을 query string으로 받음
-        lectures = Lecture.objects.filter(name=request.GET['name']).order_by('grade')
-        # request.data[~]도 가능
-        # filter(~__gt=~): greater than, lt(less than), gte(greater than equal), lte
-        serializer = LectureSerializer(lectures, many=True)
-        return Response(serializer.data)
+    @action(methods=['get'], detail=False, url_path='lecture-filter')  # detail: list인지 detail인지
+    def lecture_filter(self, request):  # 입력을 query string으로 받음
+        lecture_name = request.query_params.get('name')
+        # request.GET도 가능, request.data[~]는 body에 담긴 data 접근(POST)
+        if lecture_name is not None:
+            lectures = Lecture.objects.filter(name__icontains=lecture_name).order_by('grade')
+            # __icontains: 대소문자 구분 없이 포함 여부 확인
+            # filter(~__gt=~): greater than, lt(less than), gte(greater than equal), lte
+            serializer = LectureSerializer(lectures, many=True)
+            return Response(serializer.data)
+        return Response("검색 결과가 없습니다.")
 
     @action(detail=True)
     def result(self, request, pk):
