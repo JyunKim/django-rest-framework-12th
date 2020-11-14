@@ -56,7 +56,7 @@ class LectureViewSet(viewsets.ModelViewSet):
     queryset = Lecture.objects.all()
 
     @action(methods=['get'], detail=False, url_path='lecture-filter')  # detail: list인지 detail인지
-    def lecture_filter(self, request):  # 입력을 query string으로 받음
+    def search_lecture(self, request):  # 입력을 query string으로 받음
         lecture_name = request.query_params.get('name')
         # request.GET도 가능, request.data[~]는 body에 담긴 data 접근(POST)
         if lecture_name is not None:

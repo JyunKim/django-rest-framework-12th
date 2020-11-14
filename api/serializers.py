@@ -9,11 +9,11 @@ class ResultSerializer(serializers.ModelSerializer):
 
 
 class RankSerializer(serializers.ModelSerializer):
-    name = serializers.SerializerMethodField()  # 함수의 반환값을 필드로(default=get_~)
+    lecture_name = serializers.SerializerMethodField()  # 함수의 반환값을 필드로(default=get_~)
     # API 서버에 serializer로 name 필드가 추가되어서 나타남
 
     def get_name(self, obj):  # obj: rank 객체
-        return obj.lecture.name
+        return obj.lecture.lecture_name
 
     class Meta:
         model = Rank
