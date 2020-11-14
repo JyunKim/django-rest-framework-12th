@@ -468,8 +468,25 @@ class ProfileViewSet(viewsets.ModelViewSet):
 ![lecture](api/img/permission1.PNG)
 ![lecture](api/img/permission2.PNG)
 
+### Validation
+```python
+class RankSerializer(serializers.ModelSerializer):
+
+    def validate_mileage(self, value):
+        if value > 36 or value < 0:
+            raise serializers.ValidationError("mileage should be non-negative integer less than 37")
+        return value
+    
+    class Meta:
+        model = Rank
+        fields = '__all__'
+```
+
 ### 궁금한 점
 - filterset icontains로 하면 입력 창에 icontains 포함돼서 나옴
 - obj가 뭔지
 - 인증은 어떻게 부여하는 건지
 - 로그인 기능 만들 때 User 모델에 있는 정보 입력 가능한지 
+- validation이랑 validator 차이가 뭔지
+- validator를 field에 적용하려면 따로 정의를 해야 하는 건지(fields=all)
+- 모델에서 unique=True랑 uniqueValidator랑 뭐가 다른지

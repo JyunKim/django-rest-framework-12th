@@ -15,6 +15,11 @@ class RankSerializer(serializers.ModelSerializer):
     def get_lecture_name(self, obj):  # obj: rank 객체
         return obj.lecture.name
 
+    def validate_mileage(self, value):
+        if value > 36 or value < 0:
+            raise serializers.ValidationError("mileage should be non-negative integer less than 37")
+        return value
+
     class Meta:
         model = Rank
         fields = '__all__'
