@@ -7,6 +7,7 @@ from .models import Lecture, Professor, Profile, Rank
 from .serializers import LectureSerializer, ResultSerializer, RankSerializer, ProfileSerializer
 from rest_framework.decorators import action
 from django.db.models import Q  # filter or 연산 가능
+from django_filters.rest_framework import FilterSet, filters, DjangoFilterBackend
 
 
 '''
@@ -51,21 +52,38 @@ class LectureDetail(APIView):
 '''
 
 
+class LectureFilter(FilterSet):
+    professor = filters.CharFilter(method='find_by_professor')
+
+    class Meta:
+        model = Lecture
+        fields = {
+            'name': ['icontains'],
+        }
+
+    def find_by_professor(self, queryset, professor, value):
+        professor = Professor.objects.get(name__icontains=value)
+        lectures = queryset.filter(professor=professor)
+        return lectures
+
+
 class LectureViewSet(viewsets.ModelViewSet):
     serializer_class = LectureSerializer
     queryset = Lecture.objects.all()
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = LectureFilter
 
-    @action(methods=['get'], detail=False, url_path='lecture-filter')  # detail: list인지 detail인지
-    def search_lecture(self, request):  # 입력을 query string으로 받음
-        lecture_name = request.query_params.get('name')
-        # request.GET도 가능, request.data[~]는 body에 담긴 data 접근(POST)
-        if lecture_name is not None:
-            lectures = Lecture.objects.filter(name__icontains=lecture_name).order_by('grade')
-            # __icontains: 대소문자 구분 없이 포함 여부 확인
-            # filter(~__gt=~): greater than, lt(less than), gte(greater than equal), lte
-            serializer = LectureSerializer(lectures, many=True)
-            return Response(serializer.data)
-        return Response("검색 결과가 없습니다.")
+    # @action(methods=['get'], detail=False, url_path='lecture-filter')  # detail: list인지 detail인지
+    # def search_lecture(self, request):  # 입력을 query string으로 받음
+    #     lecture_name = request.query_params.get('name')
+    #     # request.GET도 가능, request.data[~]는 body에 담긴 data 접근(POST)
+    #     if lecture_name is not None:
+    #         lectures = Lecture.objects.filter(name__icontains=lecture_name).order_by('grade')
+    #         # __icontains: 대소문자 구분 없이 포함 여부 확인
+    #         # filter(~__gt=~): greater than, lt(less than), gte(greater than equal), lte
+    #         serializer = LectureSerializer(lectures, many=True)
+    #         return Response(serializer.data)
+    #     return Response("검색 결과가 없습니다.")
 
     @action(detail=True)
     def result(self, request, pk):

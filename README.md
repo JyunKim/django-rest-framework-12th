@@ -408,3 +408,35 @@ class ProfileViewSet(viewsets.ModelViewSet):
 ![lecture](api/img/profile-detail.PNG)
 
 ![lecture](api/img/mileage_cut.PNG)
+
+
+## 5주차 과제
+
+### FilterSet
+```python
+class LectureFilter(FilterSet):
+    professor = filters.CharFilter(method='find_by_professor')
+
+    class Meta:
+        model = Lecture
+        fields = {
+            'name': ['icontains'],
+        }
+
+    def find_by_professor(self, queryset, professor, value):
+        professor = Professor.objects.get(name__icontains=value)
+        lectures = queryset.filter(professor=professor)
+        return lectures
+
+
+class LectureViewSet(viewsets.ModelViewSet):
+    serializer_class = LectureSerializer
+    queryset = Lecture.objects.all()
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = LectureFilter
+```
+![lecture](api/img/filterset1.PNG)
+![lecture](api/img/filterset2.PNG)
+![lecture](api/img/filterset3.PNG)
+![lecture](api/img/filterset4.PNG)
+
