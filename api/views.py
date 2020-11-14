@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
-from rest_framework import status, viewsets
+from rest_framework import status, viewsets, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Lecture, Professor, Profile, Rank
@@ -72,6 +72,7 @@ class LectureViewSet(viewsets.ModelViewSet):
     queryset = Lecture.objects.all()
     filter_backends = [DjangoFilterBackend]
     filterset_class = LectureFilter
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)  # 인증을 부여받은 대상만 update, delete 가능
 
     # @action(methods=['get'], detail=False, url_path='lecture-filter')  # detail: list인지 detail인지
     # def search_lecture(self, request):  # 입력을 query string으로 받음
@@ -100,9 +101,18 @@ class LectureViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
+class ProfileUpdatePermission(permissions.BasePermission):
+
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        return obj.user == request.user
+
+
 class ProfileViewSet(viewsets.ModelViewSet):
     serializer_class = ProfileSerializer
     queryset = Profile.objects.all()
+    permission_classes = (ProfileUpdatePermission,)  # 유저는 자신의 정보만 update, delete 가능
 
     @action(detail=True, url_path='mileage-cut')
     def mileage_cut(self, request, pk):

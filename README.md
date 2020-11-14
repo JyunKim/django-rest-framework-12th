@@ -435,8 +435,41 @@ class LectureViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_class = LectureFilter
 ```
+
 ![lecture](api/img/filterset1.PNG)
 ![lecture](api/img/filterset2.PNG)
 ![lecture](api/img/filterset3.PNG)
 ![lecture](api/img/filterset4.PNG)
 
+### Permission
+```python
+class LectureViewSet(viewsets.ModelViewSet):
+    serializer_class = LectureSerializer
+    queryset = Lecture.objects.all()
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = LectureFilter
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+
+class ProfileUpdatePermission(permissions.BasePermission):
+
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        return obj.user == request.user
+
+
+class ProfileViewSet(viewsets.ModelViewSet):
+    serializer_class = ProfileSerializer
+    queryset = Profile.objects.all()
+    permission_classes = (ProfileUpdatePermission,)
+```
+
+![lecture](api/img/permission1.PNG)
+![lecture](api/img/permission2.PNG)
+
+### 궁금한 점
+- filterset icontains로 하면 입력 창에 icontains 포함돼서 나옴
+- obj가 뭔지
+- 인증은 어떻게 부여하는 건지
+- 로그인 기능 만들 때 User 모델에 있는 정보 입력 가능한지 
