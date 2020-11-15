@@ -415,13 +415,12 @@ class ProfileViewSet(viewsets.ModelViewSet):
 ### FilterSet
 ```python
 class LectureFilter(FilterSet):
+    name = filters.CharFilter(lookup_expr='icontains')
     professor = filters.CharFilter(method='find_by_professor')
 
     class Meta:
         model = Lecture
-        fields = {
-            'name': ['icontains'],
-        }
+        fields = ['name', 'professor']
 
     def find_by_professor(self, queryset, professor, value):
         professor = Professor.objects.get(name__icontains=value)
