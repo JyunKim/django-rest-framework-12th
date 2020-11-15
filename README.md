@@ -483,7 +483,8 @@ class RankSerializer(serializers.ModelSerializer):
 ```
 
 ### 궁금한 점
-- filterset icontains로 하면 입력 창에 icontains 포함돼서 나옴
+- filterset icontains로 하면 입력 창에 contains 포함돼서 나옴
+- choiceFilter
 - obj가 뭔지
 - 인증은 어떻게 부여하는 건지
 - 로그인 기능 만들 때 User 모델에 있는 정보 입력 가능한지 
