@@ -59,7 +59,7 @@ class LectureFilter(FilterSet):
         model = Lecture
         fields = ['name', 'professor']
 
-    def find_by_professor(self, queryset, professor, value):
+    def find_by_professor(self, queryset, name, value):
         return queryset.filter(professor__name__icontains=value)
 
 
