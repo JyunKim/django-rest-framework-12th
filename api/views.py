@@ -20,9 +20,10 @@ class LectureList(APIView):
         return Response(serializer.data)
 
     def post(self, request, format=None):
+        # Serializer 인자에 data를 넣으면 deserialize -> data를 모델에 삽입
         serializer = LectureSerializer(data=request.data)
         # valid 하지 않으면 status code 400 raise
-        serializer.is_valid(raise_exception=True)
+        serializer.is_valid(raise_exception=True)  # -> serializer.validated_data
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -59,9 +60,7 @@ class LectureFilter(FilterSet):
         fields = ['name', 'professor']
 
     def find_by_professor(self, queryset, professor, value):
-        professor = Professor.objects.get(name__icontains=value)
-        lectures = queryset.filter(professor=professor)
-        return lectures
+        return queryset.filter(professor__name__icontains=value)
 
 
 class LectureViewSet(viewsets.ModelViewSet):
@@ -101,8 +100,12 @@ class LectureViewSet(viewsets.ModelViewSet):
 class ProfileUpdatePermission(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
+        # Read permissions are allowed to any request,
+        # so we'll always allow GET, HEAD or OPTIONS requests
         if request.method in permissions.SAFE_METHODS:
             return True
+        # Write permissions are only allowed to the owner of the object.
+        # account.user == 현재 접속 중인 user
         return obj.user == request.user
 
 
